@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { api } from "../utils/Api.js";
+import { Route, Switch, Redirect } from 'react-router-dom';
 import Header from "./Header";
 import Main from "./Main";
+import Login from "./Login";
+import Register from "./Register";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup"
@@ -166,52 +169,62 @@ function App() {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-    <div className="page">
-      <Header />
-      <Main
-        onEditAvatar={handleEditAvatarClick}
-        onEditProfile={handleEditProfileClick}
-        onAddPlace={handleAddPlaceClick}
-        onCardClick={handleCardClick}
-        onCardLike={handleCardLike}
-        onCardDelete={handleTrashbinClick}
-        cards={cards}
-      />
-      <Footer />
-      {/* Модалка редактирования профиля */}
-      <EditProfilePopup
-        isOpen={isEditProfilePopupOpen} 
-        onClose={closeAllPopups}
-        onUpdateUser={handleUpdateUser}>
-      </EditProfilePopup>
+      <div className="page">
+        <Header />
+        <Switch>
+          <Route exact path="/">
+            <Main
+              onEditAvatar={handleEditAvatarClick}
+              onEditProfile={handleEditProfileClick}
+              onAddPlace={handleAddPlaceClick}
+              onCardClick={handleCardClick}
+              onCardLike={handleCardLike}
+              onCardDelete={handleTrashbinClick}
+              cards={cards}
+            />
+          </Route>
+          <Route path="/signup">
+            <Register/>
+          </Route>
+          <Route path="/signin">
+            <Login/>
+          </Route>
+          {/* <Route>
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/signup" />}
+          </Route> */}
+        </Switch>
+        <Footer />
+        {/* Модалка редактирования профиля */}
+        <EditProfilePopup
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser}>
+        </EditProfilePopup>
 
-      {/* Модалка смены аватара */}
-      <EditAvatarPopup
-        isOpen={isEditAvatarPopupOpen}
-        onClose={closeAllPopups}
-        onUpdateAvatar={handleUpdateAvatar}>
-      </EditAvatarPopup>
-      
-      {/* Модалка добавления карточки */}
-      <AddPlacePopup
-        isOpen={isAddPlacePopupOpen}
-        onClose={closeAllPopups}
-        onAddPlace={handleAddPlaceSubmit}>
-      </AddPlacePopup>
+        {/* Модалка смены аватара */}
+        <EditAvatarPopup
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar}
+        ></EditAvatarPopup>
 
-      {/* Модалка удаления карточки */}
-      <DeleteCardConfirmPopup
-        isOpen={isDeleteCardConfirmPopupOpen}
-        onClose={closeAllPopups}
-        onConfirmCardDelete={handleDeleteCard}>
-      </DeleteCardConfirmPopup>
-      
+        {/* Модалка добавления карточки */}
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlaceSubmit}
+        ></AddPlacePopup>
 
-      {/* Модалка открытия картинки */}
-      <ImagePopup 
-        card={selectedCard} 
-        onClose={closeAllPopups} />
-    </div>
+        {/* Модалка удаления карточки */}
+        <DeleteCardConfirmPopup
+          isOpen={isDeleteCardConfirmPopupOpen}
+          onClose={closeAllPopups}
+          onConfirmCardDelete={handleDeleteCard}
+        ></DeleteCardConfirmPopup>
+
+        {/* Модалка открытия картинки */}
+        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+      </div>
     </CurrentUserContext.Provider>
   );
 }
