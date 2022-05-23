@@ -6,6 +6,7 @@ import Header from "./Header";
 import Main from "./Main";
 import Login from "./Login";
 import Register from "./Register";
+import InfoToolTip from "./InfoToolTip"
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup"
@@ -19,6 +20,7 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isDeleteCardConfirmPopupOpen, setIsDeleteCardConfirmPopupOpen] = useState(false);
+  const [isInfoToolTipOpen, setIsInfoToolTipOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [currentUser, setCurrentUser] = useState({}); 
   const [cards, setCards] = useState([]); 
@@ -172,6 +174,7 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setSelectedCard(null);
     setIsDeleteCardConfirmPopupOpen(false);
+    setIsInfoToolTipOpen(false);
   };
 
   return (
@@ -235,6 +238,11 @@ function App() {
 
         {/* Модалка открытия картинки */}
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+
+        {/* Модалка с ответом о регистрации */}
+        <InfoToolTip 
+        isOpen={isInfoToolTipOpen}
+        onClose={closeAllPopups}/>
       </div>
     </CurrentUserContext.Provider>
   );
