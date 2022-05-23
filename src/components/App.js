@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "../utils/Api.js";
 import { Route, Switch, Redirect } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
 import Header from "./Header";
 import Main from "./Main";
 import Login from "./Login";
@@ -22,6 +23,8 @@ function App() {
   const [currentUser, setCurrentUser] = useState({}); 
   const [cards, setCards] = useState([]); 
   const [removeCard, setRemoveCard] = useState(null);
+
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => { // попробовать еще раз прописать данные пользователя и карточек в одном useEffect
       api.getProfile()
@@ -138,6 +141,10 @@ function App() {
       .catch(err => console.log(`Ошибка...: ${err}`))
   };
 
+
+  function handleRegister (email, password){
+  }
+
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
   };
@@ -171,29 +178,33 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <Header />
+
         <Switch>
-          <Route exact path="/">
-            <Main
-              onEditAvatar={handleEditAvatarClick}
-              onEditProfile={handleEditProfileClick}
-              onAddPlace={handleAddPlaceClick}
-              onCardClick={handleCardClick}
-              onCardLike={handleCardLike}
-              onCardDelete={handleTrashbinClick}
-              cards={cards}
-            />
-          </Route>
-          <Route path="/signup">
+          <ProtectedRoute exact path="/" loggedIn={loggedIn}
+            component={Main}
+            onEditAvatar={handleEditAvatarClick}
+            onEditProfile={handleEditProfileClick}
+            onAddPlace={handleAddPlaceClick}
+            onCardClick={handleCardClick}
+            onCardLike={handleCardLike}
+            onCardDelete={handleTrashbinClick}
+            cards={cards}
+          ></ProtectedRoute>
+          <Route path="/signup"
+            // handleRegister={handleRegister}
+            >
             <Register/>
           </Route>
           <Route path="/signin">
             <Login/>
           </Route>
-          {/* <Route>
-            {loggedIn ? <Redirect to="/" /> : <Redirect to="/signup" />}
-          </Route> */}
+          <Route>
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
+          </Route>
         </Switch>
+
         <Footer />
+
         {/* Модалка редактирования профиля */}
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}

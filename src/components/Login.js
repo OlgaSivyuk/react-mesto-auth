@@ -4,7 +4,7 @@ import React from 'react';
 function Login () {
   
   return (
-    <div className="login__body">
+    <div className="login">
         <h3 className="login__title">Вход</h3>
         <form className="login__form">
           <label className="login__form-field">
@@ -34,7 +34,7 @@ function Login () {
               id="error-login-email"
               className="login__error">
           </span>
-          <button className="login__button" type="submit">Войти</button>
+          <button className="login__submit" type="submit">Войти</button>
         </form>
     </div>
   );
