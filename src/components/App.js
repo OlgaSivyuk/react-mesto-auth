@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "../utils/Api.js";
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import * as Auth from '../utils/Auth.js';
 import ProtectedRoute from './ProtectedRoute';
 import Header from "./Header";
 import Main from "./Main";
@@ -15,18 +16,26 @@ import DeleteCardConfirmPopup from "./DeleteCardConfirmPopup";
 import Footer from "./Footer";
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
+import successSignImg from '../images/union.svg';
+import unSuccessSignImg from '../images/union-wrong.svg';
+
 function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isDeleteCardConfirmPopupOpen, setIsDeleteCardConfirmPopupOpen] = useState(false);
-  const [isInfoToolTipOpen, setIsInfoToolTipOpen] = useState(false);
+  
+  const [cards, setCards] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
-  const [currentUser, setCurrentUser] = useState({}); 
-  const [cards, setCards] = useState([]); 
   const [removeCard, setRemoveCard] = useState(null);
+  const [currentUser, setCurrentUser] = useState({}); 
 
+  const [userData, setUserData] = useState({ _id: "", email: "" });
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isInfoToolTipOpen, setIsInfoToolTipOpen] = useState(false);
+  const [isInfoTooltipMessage, setIsInfoTooltipMessage] = useState({ image: "", text: "" });
+  
+  const history = useHistory();
 
   useEffect(() => { // попробовать еще раз прописать данные пользователя и карточек в одном useEffect
       api.getProfile()
@@ -143,9 +152,64 @@ function App() {
       .catch(err => console.log(`Ошибка...: ${err}`))
   };
 
+  function handleRegister ({password, email}){
+    return Auth.register(password, email)
+      .then(res => {
+        console.log("res", res)
+        const { email } = res.data;
+        setUserData({ ...userData, email })
+        setIsInfoTooltipMessage({ image: successSignImg, text: "Вы успешно зарегистрировались!" });
+        history.push('/signin');
+      })
+      .catch(err => {
+        console.log(`Ошибка...: ${err}`);
+        setIsInfoTooltipMessage({ image: unSuccessSignImg, text: "Что-то пошло не так! Попробуйте ещё раз." })
+      })
+      .finally(() => {
+        setIsInfoToolTipOpen(true);
+      });
+  };
 
-  function handleRegister (email, password){
+  function handleLogin({password, email}){
+    return Auth.authorize(password, email)
+    .then(data => {
+      if (data.token){
+        localStorage.setItem("jwt", data.token);
+        
+        handleCheckToken();
+        history.push('/');
+      } 
+    })
+    .catch(err => {
+      console.log(`Ошибка...: ${err}`);
+      setIsInfoTooltipMessage({ image: unSuccessSignImg, text: "Неверный email или пароль. Попробуйте ещё раз." })
+      setIsInfoToolTipOpen(true);
+    })
+  };
+
+  
+
+  function handleCheckToken(){
+    if (localStorage.getItem("jwt")){
+      let token = localStorage.getItem("jwt")
+      Auth.getContent(token)
+      .then(res => {
+        const { _id, email } = res.data;
+          setUserData({ _id, email });
+          setLoggedIn(true);
+          history.push('/');
+      })
+      .catch(err => {
+        console.log(`Ошибка...: ${err}`);
+      })
+    }
   }
+
+  // useEffect(() => {
+  //   if (loggedIn) {
+  //       history.push("/");
+  //   }
+  // }, [loggedIn]);
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -177,6 +241,7 @@ function App() {
     setIsInfoToolTipOpen(false);
   };
 
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
@@ -193,13 +258,11 @@ function App() {
             onCardDelete={handleTrashbinClick}
             cards={cards}
           ></ProtectedRoute>
-          <Route path="/signup"
-            // handleRegister={handleRegister}
-            >
-            <Register/>
+          <Route path="/signup">
+          <Register handleRegister={handleRegister}/>
           </Route>
           <Route path="/signin">
-            <Login/>
+            <Login handleLogin={handleLogin}/>
           </Route>
           <Route>
             {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
@@ -242,10 +305,23 @@ function App() {
         {/* Модалка с ответом о регистрации */}
         <InfoToolTip 
         isOpen={isInfoToolTipOpen}
-        onClose={closeAllPopups}/>
+        onClose={closeAllPopups}
+        image={isInfoTooltipMessage.image} 
+        text={isInfoTooltipMessage.text}>
+        </InfoToolTip>
       </div>
     </CurrentUserContext.Provider>
   );
 }
 
 export default App;
+
+
+
+// return Auth.register(password, email)
+    // .then(() => {
+    //   history.push("/signin");
+    // })
+    // .catch(err => {
+    //   console.log(`Ошибка...: ${err}`);
+    // })
