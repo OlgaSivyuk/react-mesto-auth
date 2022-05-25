@@ -13,12 +13,12 @@ function Header({userData, handleLogOut}) {
       </Route>
 
       <Route path='/signup'>
-        <p className='header__email'>{userData.email}</p>
+        <p className='header__email'></p>
         <Link className='header__link header__link_signin' to='/signin'>Войти</Link>
       </Route>
 
       <Route path='/signin'>
-        <p className='header__email'>{userData.email}</p>
+        <p className='header__email'></p>
         <Link className='header__link header__link_signup' to='/signup'>Регистрация</Link>
       </Route>
 
