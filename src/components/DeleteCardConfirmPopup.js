@@ -1,5 +1,5 @@
-import React from "react";
-import PopupWithForm from "./PopupWithForm";
+import React from 'react';
+import PopupWithForm from './PopupWithForm';
 
 function DeleteCardConfirmPopup ({ isOpen, onClose, onConfirmCardDelete }){
 
@@ -9,11 +9,11 @@ function DeleteCardConfirmPopup ({ isOpen, onClose, onConfirmCardDelete }){
       }
     return(
       <PopupWithForm
-        name="delete-card"
-        title="Вы уверены?"
-        id="form-delete-card"
-        formName="delete-place-card"
-        buttonText="Да"
+        name='delete-card'
+        title='Вы уверены?'
+        id='form-delete-card'
+        formName='delete-place-card'
+        buttonText='Да'
         onSubmit={handleSubmit}
         isOpen={isOpen}
         onClose={onClose}

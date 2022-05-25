@@ -23,7 +23,7 @@ class Api {
   
   editProfile(name, about) { 
     return fetch(`${this._baseUrl}/users/me`, {
-        method: "PATCH", 
+        method: 'PATCH', 
         headers: this._headers,
         body: JSON.stringify({ // делаем из объекта строку для передачи данных
             name,
@@ -36,7 +36,7 @@ class Api {
 
   addNewCard(name, link) { 
     return fetch(`${this._baseUrl}/cards`, {
-        method: "POST", // этот метод принимает данные на хранение, используется при загрузке файлов
+        method: 'POST', // этот метод принимает данные на хранение, используется при загрузке файлов
         headers: this._headers,
         body: JSON.stringify({
             name,
@@ -49,7 +49,7 @@ class Api {
 
   deleteCard(id) { 
     return fetch(`${this._baseUrl}/cards/${id}`,{ // применяем шаблонные строки и id, который забираем из карточки во время удаления
-        method: "DELETE",
+        method: 'DELETE',
         headers: this._headers,
     })
     .then(res => res.ok ? res.json():
@@ -58,7 +58,7 @@ class Api {
 
   deleteLike(id) { 
     return fetch(`${this._baseUrl}/cards/${id}/likes`,{ 
-        method: "DELETE",
+        method: 'DELETE',
         headers: this._headers,
     })
     .then(res => res.ok ? res.json():
@@ -67,7 +67,7 @@ class Api {
 
   addLike(id) { 
     return fetch(`${this._baseUrl}/cards/${id}/likes`,{ 
-        method: "PUT",
+        method: 'PUT',
         headers: this._headers,
     })
     .then(res => res.ok ? res.json():
@@ -76,7 +76,7 @@ class Api {
 
   editProfileAvatar(avatar) { 
     return fetch(`${this._baseUrl}/users/me/avatar`,{ 
-        method: "PATCH",
+        method: 'PATCH',
         headers: this._headers,
         body: JSON.stringify({ // делаем из объекта строку для передачи данных
           avatar

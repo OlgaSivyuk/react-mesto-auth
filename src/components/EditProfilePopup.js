@@ -1,11 +1,11 @@
-import React, { useState, useContext, useEffect } from "react";
-import PopupWithForm from "./PopupWithForm";
+import React, { useState, useContext, useEffect } from 'react';
+import PopupWithForm from './PopupWithForm';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function EditProfilePopup ({isOpen, onClose, onUpdateUser}){
   const currentUser = useContext(CurrentUserContext);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   
   function handleNameChange(e) {
     setName(e.target.value);
@@ -30,45 +30,45 @@ function EditProfilePopup ({isOpen, onClose, onUpdateUser}){
 
   return (
     <PopupWithForm
-        name="profile"
-        title="Редактировать профиль"
-        id="form-profile"
-        formName="edit-profile-form"
-        buttonText="Сохранить"
+        name='profile'
+        title='Редактировать профиль'
+        id='form-profile'
+        formName='edit-profile-form'
+        buttonText='Сохранить'
         isOpen={isOpen}
         onClose={onClose}
         onSubmit={handleSubmit}>
             <input
-              type="text"
-              id="name"
-              name="name"
-              className="popup__input"
-              placeholder="Имя"
-              minLength="2"
-              maxLength="40"
+              type='text'
+              id='name'
+              name='name'
+              className='popup__input'
+              placeholder='Имя'
+              minLength='2'
+              maxLength='40'
               required
-              value={name || ""}
+              value={name || ''}
               onChange={handleNameChange} 
             />
             <span 
-              id="error-name" 
-              className="popup__error">
+              id='error-name' 
+              className='popup__error'>
             </span>
             <input
-              type="text"
-              id="bio"
-              name="bio"
-              className="popup__input"
-              placeholder="О себе"
-              minLength="2"
-              maxLength="200"
+              type='text'
+              id='bio'
+              name='bio'
+              className='popup__input'
+              placeholder='О себе'
+              minLength='2'
+              maxLength='200'
               required
-              value={description || ""}
+              value={description || ''}
               onChange={handleDescriptionChange}
             />
             <span 
-              id="error-bio" 
-              className="popup__error">
+              id='error-bio' 
+              className='popup__error'>
             </span>
         </PopupWithForm>
   )

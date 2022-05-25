@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { api } from "../utils/Api.js";
+import { useState, useEffect } from 'react';
+import { api } from '../utils/Api.js';
 import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import * as Auth from '../utils/Auth.js';
 import ProtectedRoute from './ProtectedRoute';
-import Header from "./Header";
-import Main from "./Main";
-import Login from "./Login";
-import Register from "./Register";
-import InfoToolTip from "./InfoToolTip"
-import EditProfilePopup from "./EditProfilePopup";
-import EditAvatarPopup from "./EditAvatarPopup";
-import AddPlacePopup from "./AddPlacePopup"
-import ImagePopup from "./ImagePopup";
-import DeleteCardConfirmPopup from "./DeleteCardConfirmPopup";
-import Footer from "./Footer";
+import Header from './Header';
+import Main from './Main';
+import Login from './Login';
+import Register from './Register';
+import InfoToolTip from './InfoToolTip'
+import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup'
+import ImagePopup from './ImagePopup';
+import DeleteCardConfirmPopup from './DeleteCardConfirmPopup';
+import Footer from './Footer';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 import successSignImg from '../images/union.svg';
@@ -30,10 +30,10 @@ function App() {
   const [removeCard, setRemoveCard] = useState(null);
   const [currentUser, setCurrentUser] = useState({}); 
 
-  const [userData, setUserData] = useState({ _id: "", email: "" });
+  const [userData, setUserData] = useState({ _id: '', email: '' });
   const [loggedIn, setLoggedIn] = useState(false);
   const [isInfoToolTipOpen, setIsInfoToolTipOpen] = useState(false);
-  const [isInfoTooltipMessage, setIsInfoTooltipMessage] = useState({ image: "", text: "" });
+  const [isInfoTooltipMessage, setIsInfoTooltipMessage] = useState({ image: '', text: '' });
   
   const history = useHistory();
 
@@ -152,18 +152,28 @@ function App() {
       .catch(err => console.log(`Ошибка...: ${err}`))
   };
 
+  useEffect(() => {
+    handleCheckToken();
+  }, []);
+
+  useEffect(() => {
+    if (loggedIn) {
+        history.push('/');
+    }
+  }, [loggedIn]);
+
   function handleRegister ({password, email}){
     return Auth.register(password, email)
       .then(res => {
-        console.log("res", res)
+        console.log('res', res)
         const { email } = res.data;
         setUserData({ ...userData, email })
-        setIsInfoTooltipMessage({ image: successSignImg, text: "Вы успешно зарегистрировались!" });
+        setIsInfoTooltipMessage({ image: successSignImg, text: 'Вы успешно зарегистрировались!' });
         history.push('/signin');
       })
       .catch(err => {
         console.log(`Ошибка...: ${err}`);
-        setIsInfoTooltipMessage({ image: unSuccessSignImg, text: "Что-то пошло не так! Попробуйте ещё раз." })
+        setIsInfoTooltipMessage({ image: unSuccessSignImg, text: 'Что-то пошло не так! Попробуйте ещё раз.' })
       })
       .finally(() => {
         setIsInfoToolTipOpen(true);
@@ -174,7 +184,7 @@ function App() {
     return Auth.authorize(password, email)
     .then(data => {
       if (data.token){
-        localStorage.setItem("jwt", data.token);
+        localStorage.setItem('jwt', data.token);
         
         handleCheckToken();
         history.push('/');
@@ -182,22 +192,20 @@ function App() {
     })
     .catch(err => {
       console.log(`Ошибка...: ${err}`);
-      setIsInfoTooltipMessage({ image: unSuccessSignImg, text: "Неверный email или пароль. Попробуйте ещё раз." })
+      setIsInfoTooltipMessage({ image: unSuccessSignImg, text: 'Неверный email или пароль. Попробуйте ещё раз.' })
       setIsInfoToolTipOpen(true);
     })
   };
 
-  
-
   function handleCheckToken(){
-    if (localStorage.getItem("jwt")){
-      let token = localStorage.getItem("jwt")
+    if (localStorage.getItem('jwt')){
+      let token = localStorage.getItem('jwt')
       Auth.getContent(token)
       .then(res => {
         const { _id, email } = res.data;
-          setUserData({ _id, email });
           setLoggedIn(true);
-          history.push('/');
+          setUserData({ _id, email });
+          //history.push('/');
       })
       .catch(err => {
         console.log(`Ошибка...: ${err}`);
@@ -205,11 +213,12 @@ function App() {
     }
   }
 
-  // useEffect(() => {
-  //   if (loggedIn) {
-  //       history.push("/");
-  //   }
-  // }, [loggedIn]);
+  function handleLogOut(){
+    localStorage.removeItem('jwt');
+    setLoggedIn(false);
+    setUserData({ _id: '', email: '' });
+    history.push('/signin')
+  }
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -241,14 +250,16 @@ function App() {
     setIsInfoToolTipOpen(false);
   };
 
-
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <div className="page">
-        <Header />
+      <div className='page'>
+        <Header
+        loggedIn={loggedIn}
+        handleLogOut={handleLogOut}
+        userData = {userData}/>
 
         <Switch>
-          <ProtectedRoute exact path="/" loggedIn={loggedIn}
+          <ProtectedRoute exact path='/' loggedIn={loggedIn}
             component={Main}
             onEditAvatar={handleEditAvatarClick}
             onEditProfile={handleEditProfileClick}
@@ -258,14 +269,17 @@ function App() {
             onCardDelete={handleTrashbinClick}
             cards={cards}
           ></ProtectedRoute>
-          <Route path="/signup">
-          <Register handleRegister={handleRegister}/>
+          
+          <Route path='/signup'>
+            <Register handleRegister={handleRegister}/>
           </Route>
-          <Route path="/signin">
+          
+          <Route path='/signin'>
             <Login handleLogin={handleLogin}/>
           </Route>
+          
           <Route>
-            {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
+            {loggedIn ? <Redirect to='/' /> : <Redirect to='/signin' />}
           </Route>
         </Switch>
 
@@ -320,7 +334,7 @@ export default App;
 
 // return Auth.register(password, email)
     // .then(() => {
-    //   history.push("/signin");
+    //   history.push('/signin');
     // })
     // .catch(err => {
     //   console.log(`Ошибка...: ${err}`);

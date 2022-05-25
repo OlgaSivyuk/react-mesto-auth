@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 function Register({ handleRegister }) {
   const [data, setData] = useState({
-    password: "",
-    email: "",
+    password: '',
+    email: '',
   });
     
   function handleChange(e) {
@@ -21,37 +21,37 @@ function Register({ handleRegister }) {
 }
     
   return (
-    <div className="register">
-      <h3 className="register__title">Регистрация</h3>
-      <form className="register__form" onSubmit={handleSubmit}>
-        <label className="register__form_field">
+    <div className='register'>
+      <h3 className='register__title'>Регистрация</h3>
+      <form className='register__form' onSubmit={handleSubmit}>
+        <label className='register__form_field'>
           <input
-            className="register__input register__input_email"
-            type="email"
-            placeholder="Email"
-            name="email"
+            className='register__input register__input_email'
+            type='email'
+            placeholder='Email'
+            name='email'
             onChange={handleChange}
             value={data.email}
             required
           />
         </label>
-        <span id="error-register-email" className="register__error"></span>
+        <span id='error-register-email' className='register__error'></span>
 
-        <label className="register__form-field">
+        <label className='register__form-field'>
           <input
-            className="register__input register__input_password"
-            type="password"
-            placeholder="Пароль"
-            name="password"
+            className='register__input register__input_password'
+            type='password'
+            placeholder='Пароль'
+            name='password'
             onChange={handleChange}
             value={data.password}
             required
           />
         </label>
-        <span id="error-register-email" className="register__error"></span>
-        <button className="register__submit" type="submit">Зарегистрироваться</button>
+        <span id='error-register-email' className='register__error'></span>
+        <button className='register__submit' type='submit'>Зарегистрироваться</button>
       </form>
-      <p className="register__signin">Уже зарегистрированы? <Link to="/signin" className="register__signin_link">Войти</Link></p>
+      <p className='register__signin'>Уже зарегистрированы? <Link to='/signin' className='register__signin_link'>Войти</Link></p>
     </div>
   );
 }
