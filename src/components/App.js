@@ -23,134 +23,23 @@ function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
-  const [isDeleteCardConfirmPopupOpen, setIsDeleteCardConfirmPopupOpen] = useState(false);
-  
+  const [isDeleteCardConfirmPopupOpen, setIsDeleteCardConfirmPopupOpen] =
+    useState(false);
+
   const [cards, setCards] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
   const [removeCard, setRemoveCard] = useState(null);
-  const [currentUser, setCurrentUser] = useState({}); 
+  const [currentUser, setCurrentUser] = useState({});
 
-  const [userData, setUserData] = useState({ _id: '', email: '' });
+  const [userData, setUserData] = useState({ _id: "", email: "" });
   const [loggedIn, setLoggedIn] = useState(false);
   const [isInfoToolTipOpen, setIsInfoToolTipOpen] = useState(false);
-  const [isInfoTooltipMessage, setIsInfoTooltipMessage] = useState({ image: '', text: '' });
-  
+  const [isInfoTooltipMessage, setIsInfoTooltipMessage] = useState({
+    image: "",
+    text: "",
+  });
+
   const history = useHistory();
-
-  useEffect(() => { // попробовать еще раз прописать данные пользователя и карточек в одном useEffect
-      api.getProfile()
-        .then(userData => {
-          setCurrentUser({...userData,
-            userName: userData.name,
-            userDescription: userData.about,
-            userAvatar: userData.avatar
-          })
-        })
-        .catch((err) => console.log(`Ошибка...: ${err}`));
-    }, []); 
-
-    function handleUpdateUser ({name, about}){
-      api.editProfile(name, about)
-      .then(userData => {
-        setCurrentUser({...userData,
-          userName: userData.name,
-          userDescription: userData.about,
-          userAvatar: userData.avatar
-        });
-        closeAllPopups();
-      }).catch(err => console.error(`Ошибка...: ${err}`));
-    };
-
-    function handleUpdateAvatar ({avatar}){
-      api.editProfileAvatar(avatar)
-      .then(userData => {
-        setCurrentUser({...userData,
-          
-          userAvatar: userData.avatar
-        });
-        closeAllPopups();
-      }).catch(err => console.error(`Ошибка...: ${err}`));
-    };
-
-  useEffect(() => {
-    api.getUsersCards()
-      .then((cardList) => {
-        const usersCard = cardList.map((card) => {
-          return {
-            name: card.name,
-            link: card.link,
-            likes: card.likes,
-            cardId: card._id,
-            ownerId: card.owner._id
-          };
-        });
-        setCards(usersCard);
-      })
-      .catch((err) => console.log(`Ошибка...: ${err}`));
-  }, []);
-
-  function handleAddPlaceSubmit({name, link}) {
-    api.addNewCard(name, link)
-    .then (newCard => {
-      setCards([{
-        name: newCard.name,
-        link: newCard.link,
-        likes: newCard.likes,
-        cardId: newCard._id,
-        ownerId: newCard.owner._id
-      }, ...cards]);
-      closeAllPopups();
-    }).catch(err => console.error(`Ошибка...: ${err}`));
-  };
-
-
-  function handleCardLike(card) { 
-    const isLiked = card.likes.some(user => user._id === currentUser._id); 
-
-    if (isLiked){ 
-      api.deleteLike(card.cardId)
-      .then(newCard => { 
-        setCards((state) => state.map((item) => {
-          if(item.cardId === card.cardId){
-            return{
-              name: newCard.name,
-              link: newCard.link,
-              likes: newCard.likes,
-              cardId: newCard._id,
-              ownerId: newCard.owner._id
-            }
-          } else return item;
-        }));
-      })
-      .catch(err => console.log(`Ошибка...: ${err}`))
-    } else {
-        api.addLike(card.cardId)
-          .then(newCard => { 
-            setCards((stateCards) => stateCards.map((item) => {
-              if(item.cardId === card.cardId){
-                return{
-                  name: newCard.name,
-                  link: newCard.link,
-                  likes: newCard.likes,
-                  cardId: newCard._id,
-                  ownerId: newCard.owner._id
-                }
-              } else return item;
-          }));
-          })
-          .catch(err => console.log(`Ошибка...: ${err}`))
-      } 
-   };
-
-  function handleDeleteCard() {
-    api.deleteCard(removeCard.cardId)
-      .then(() => {
-        setCards((stateCards) => stateCards.filter((item) => 
-        item.cardId !== removeCard.cardId));
-        closeAllPopups();
-      })
-      .catch(err => console.log(`Ошибка...: ${err}`))
-  };
 
   useEffect(() => {
     handleCheckToken();
@@ -158,87 +47,227 @@ function App() {
 
   useEffect(() => {
     if (loggedIn) {
-        history.push('/');
+      api
+        .getProfile()
+        .then((userData) => {
+          setCurrentUser({
+            ...userData,
+            userName: userData.name,
+            userDescription: userData.about,
+            userAvatar: userData.avatar,
+          });
+        })
+        .catch((err) => console.log(`Ошибка...: ${err}`));
+
+      api
+        .getUsersCards()
+        .then((cardList) => {
+          const usersCard = cardList.map((card) => {
+            return {
+              name: card.name,
+              link: card.link,
+              likes: card.likes,
+              cardId: card._id,
+              ownerId: card.owner._id,
+            };
+          });
+          setCards(usersCard);
+        })
+        .catch((err) => console.log(`Ошибка...: ${err}`));
+
+      history.push("/");
     }
   }, [loggedIn]);
 
-  function handleRegister ({password, email}){
-    return Auth.register(password, email)
-      .then(res => {
-        console.log('res', res)
-        const { email } = res.data;
-        setUserData({ ...userData, email })
-        setIsInfoTooltipMessage({ image: successSignImg, text: 'Вы успешно зарегистрировались!' });
-        history.push('/signin');
+  function handleUpdateUser({ name, about }) {
+    api
+      .editProfile(name, about)
+      .then((userData) => {
+        setCurrentUser({
+          ...userData,
+          userName: userData.name,
+          userDescription: userData.about,
+          userAvatar: userData.avatar,
+        });
+        closeAllPopups();
       })
-      .catch(err => {
+      .catch((err) => console.error(`Ошибка...: ${err}`));
+  }
+
+  function handleUpdateAvatar({ avatar }) {
+    api
+      .editProfileAvatar(avatar)
+      .then((userData) => {
+        setCurrentUser({
+          ...userData,
+          userAvatar: userData.avatar,
+        });
+        closeAllPopups();
+      })
+      .catch((err) => console.error(`Ошибка...: ${err}`));
+  }
+
+  function handleAddPlaceSubmit({ name, link }) {
+    api
+      .addNewCard(name, link)
+      .then((newCard) => {
+        setCards([
+          {
+            name: newCard.name,
+            link: newCard.link,
+            likes: newCard.likes,
+            cardId: newCard._id,
+            ownerId: newCard.owner._id,
+          },
+          ...cards,
+        ]);
+        closeAllPopups();
+      })
+      .catch((err) => console.error(`Ошибка...: ${err}`));
+  }
+
+  function handleCardLike(card) {
+    const isLiked = card.likes.some((user) => user._id === currentUser._id);
+
+    if (isLiked) {
+      api
+        .deleteLike(card.cardId)
+        .then((newCard) => {
+          setCards((state) =>
+            state.map((item) => {
+              if (item.cardId === card.cardId) {
+                return {
+                  name: newCard.name,
+                  link: newCard.link,
+                  likes: newCard.likes,
+                  cardId: newCard._id,
+                  ownerId: newCard.owner._id,
+                };
+              } else return item;
+            })
+          );
+        })
+        .catch((err) => console.log(`Ошибка...: ${err}`));
+    } else {
+      api
+        .addLike(card.cardId)
+        .then((newCard) => {
+          setCards((stateCards) =>
+            stateCards.map((item) => {
+              if (item.cardId === card.cardId) {
+                return {
+                  name: newCard.name,
+                  link: newCard.link,
+                  likes: newCard.likes,
+                  cardId: newCard._id,
+                  ownerId: newCard.owner._id,
+                };
+              } else return item;
+            })
+          );
+        })
+        .catch((err) => console.log(`Ошибка...: ${err}`));
+    }
+  }
+
+  function handleDeleteCard() {
+    api
+      .deleteCard(removeCard.cardId)
+      .then(() => {
+        setCards((stateCards) =>
+          stateCards.filter((item) => item.cardId !== removeCard.cardId)
+        );
+        closeAllPopups();
+      })
+      .catch((err) => console.log(`Ошибка...: ${err}`));
+  }
+
+  function handleRegister({ password, email }) {
+    return Auth.register(password, email)
+      .then((res) => {
+        console.log("res", res);
+        const { email } = res.data;
+        setUserData({ ...userData, email });
+        setIsInfoTooltipMessage({
+          image: successSignImg,
+          text: "Вы успешно зарегистрировались!",
+        });
+        history.push("/signin");
+      })
+      .catch((err) => {
         console.log(`Ошибка...: ${err}`);
-        setIsInfoTooltipMessage({ image: unSuccessSignImg, text: 'Что-то пошло не так! Попробуйте ещё раз.' })
+        setIsInfoTooltipMessage({
+          image: unSuccessSignImg,
+          text: "Что-то пошло не так! Попробуйте ещё раз.",
+        });
       })
       .finally(() => {
         setIsInfoToolTipOpen(true);
       });
-  };
+  }
 
-  function handleLogin({password, email}){
+  function handleLogin({ password, email }) {
     return Auth.authorize(password, email)
-    .then(data => {
-      if (data.token){
-        localStorage.setItem('jwt', data.token);
-        
-        handleCheckToken();
-        history.push('/');
-      } 
-    })
-    .catch(err => {
-      console.log(`Ошибка...: ${err}`);
-      setIsInfoTooltipMessage({ image: unSuccessSignImg, text: 'Неверный email или пароль. Попробуйте ещё раз.' })
-      setIsInfoToolTipOpen(true);
-    })
-  };
+      .then((data) => {
+        if (data.token) {
+          localStorage.setItem("jwt", data.token);
 
-  function handleCheckToken(){
-    if (localStorage.getItem('jwt')){
-      let token = localStorage.getItem('jwt')
+          handleCheckToken();
+          history.push("/");
+        }
+      })
+      .catch((err) => {
+        console.log(`Ошибка...: ${err}`);
+        setIsInfoTooltipMessage({
+          image: unSuccessSignImg,
+          text: "Неверный email или пароль. Попробуйте ещё раз.",
+        });
+        setIsInfoToolTipOpen(true);
+      });
+  }
+
+  function handleCheckToken() {
+    if (localStorage.getItem("jwt")) {
+      let token = localStorage.getItem("jwt");
       Auth.getContent(token)
-      .then(res => {
-        const { _id, email } = res.data;
+        .then((res) => {
+          const { _id, email } = res.data;
           setLoggedIn(true);
           setUserData({ _id, email });
           //history.push('/');
-      })
-      .catch(err => {
-        console.log(`Ошибка...: ${err}`);
-      })
+        })
+        .catch((err) => {
+          console.log(`Ошибка...: ${err}`);
+        });
     }
   }
 
-  function handleLogOut(){
-    localStorage.removeItem('jwt');
+  function handleLogOut() {
+    localStorage.removeItem("jwt");
     setLoggedIn(false);
-    setUserData({ _id: '', email: '' });
-    history.push('/signin')
+    setUserData({ _id: "", email: "" });
+    history.push("/signin");
   }
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
-  };
+  }
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
-  };
+  }
 
   function handleAddPlaceClick() {
     setIsAddPlacePopupOpen(true);
-  };
+  }
 
   function handleCardClick(card) {
     setSelectedCard(card);
-  };
+  }
 
-  function handleTrashbinClick(card){
-    setIsDeleteCardConfirmPopupOpen(true)
-    setRemoveCard(card)
+  function handleTrashbinClick(card) {
+    setIsDeleteCardConfirmPopupOpen(true);
+    setRemoveCard(card);
   }
 
   function closeAllPopups() {
@@ -248,18 +277,22 @@ function App() {
     setSelectedCard(null);
     setIsDeleteCardConfirmPopupOpen(false);
     setIsInfoToolTipOpen(false);
-  };
+  }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <div className='page'>
+      <div className="page">
         <Header
-        loggedIn={loggedIn}
-        handleLogOut={handleLogOut}
-        userData = {userData}/>
+          loggedIn={loggedIn}
+          handleLogOut={handleLogOut}
+          userData={userData}
+        />
 
         <Switch>
-          <ProtectedRoute exact path='/' loggedIn={loggedIn}
+          <ProtectedRoute
+            exact
+            path="/"
+            loggedIn={loggedIn}
             component={Main}
             onEditAvatar={handleEditAvatarClick}
             onEditProfile={handleEditProfileClick}
@@ -269,17 +302,17 @@ function App() {
             onCardDelete={handleTrashbinClick}
             cards={cards}
           ></ProtectedRoute>
-          
-          <Route path='/signup'>
-            <Register handleRegister={handleRegister}/>
+
+          <Route path="/signup">
+            <Register handleRegister={handleRegister} />
           </Route>
-          
-          <Route path='/signin'>
-            <Login handleLogin={handleLogin}/>
+
+          <Route path="/signin">
+            <Login handleLogin={handleLogin} />
           </Route>
-          
+
           <Route>
-            {loggedIn ? <Redirect to='/' /> : <Redirect to='/signin' />}
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
           </Route>
         </Switch>
 
@@ -289,8 +322,8 @@ function App() {
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
-          onUpdateUser={handleUpdateUser}>
-        </EditProfilePopup>
+          onUpdateUser={handleUpdateUser}
+        ></EditProfilePopup>
 
         {/* Модалка смены аватара */}
         <EditAvatarPopup
@@ -317,25 +350,15 @@ function App() {
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
         {/* Модалка с ответом о регистрации */}
-        <InfoToolTip 
-        isOpen={isInfoToolTipOpen}
-        onClose={closeAllPopups}
-        image={isInfoTooltipMessage.image} 
-        text={isInfoTooltipMessage.text}>
-        </InfoToolTip>
+        <InfoToolTip
+          isOpen={isInfoToolTipOpen}
+          onClose={closeAllPopups}
+          image={isInfoTooltipMessage.image}
+          text={isInfoTooltipMessage.text}
+        ></InfoToolTip>
       </div>
     </CurrentUserContext.Provider>
   );
 }
 
 export default App;
-
-
-
-// return Auth.register(password, email)
-    // .then(() => {
-    //   history.push('/signin');
-    // })
-    // .catch(err => {
-    //   console.log(`Ошибка...: ${err}`);
-    // })
