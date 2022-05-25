@@ -33,12 +33,9 @@ function App() {
 
   const [userData, setUserData] = useState({ _id: "", email: "" });
   const [loggedIn, setLoggedIn] = useState(false);
-  const [isInfoToolTipOpen, setIsInfoToolTipOpen] = useState(false);
-  const [isInfoTooltipMessage, setIsInfoTooltipMessage] = useState({
-    image: "",
-    text: "",
-  });
-
+  const [isInfoToolTipOpen, setIsInfoToolTipOpen] = useState(false); //TODO объединить стейты по рекомендацции ревьюера
+  const [isInfoTooltipMessage, setIsInfoTooltipMessage] = useState({ image: "", text: ""});
+  
   const history = useHistory();
 
   useEffect(() => {
